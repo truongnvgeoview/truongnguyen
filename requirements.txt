@@ -1,4 +1,5 @@
-python -m streamlit run app.py
-
-
-C:\Users\ntmh2\OneDrive\Desktop\app
+streamlit
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv
