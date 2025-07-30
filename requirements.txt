@@ -1,0 +1,4 @@
+python -m streamlit run app.py
+
+
+C:\Users\ntmh2\OneDrive\Desktop\app
