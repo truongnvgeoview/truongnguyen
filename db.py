@@ -1,11 +1,13 @@
 from sqlalchemy import create_engine, text
 import pandas as pd
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+# ✅ Lấy DATABASE_URL từ biến môi trường (Render sẽ có sẵn)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("❌ DATABASE_URL không tồn tại. Kiểm tra biến môi trường trên Render hoặc .env")
 
+# ✅ Tạo engine kết nối DB
 engine = create_engine(DATABASE_URL)
 
 
@@ -30,6 +32,7 @@ def add_inventory(model, imei, gia_nhap, tinh_trang):
 def delete_inventory(imei):
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM inventory WHERE imei = :imei"), {"imei": imei})
+
 
 # ===== BÁN HÀNG =====
 def fetch_sales():
