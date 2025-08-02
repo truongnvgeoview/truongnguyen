@@ -4,7 +4,7 @@ import os
 
 # ✅ Lấy DATABASE_URL từ biến môi trường (Render sẽ có sẵn)
 DATABASE_URL = os.environ.get("DATABASE_URL")
-print("✅ DEBUG DATABASE_URL:", DATABASE_URL)
+print("📌 DEBUG URL:", repr(DATABASE_URL))  # Hiển thị rõ có "" không
 if not DATABASE_URL:
     raise ValueError("❌ DATABASE_URL không tồn tại. Kiểm tra biến môi trường trên Render hoặc .env")
 
