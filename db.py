@@ -1,13 +1,24 @@
-from sqlalchemy import create_engine
-import pandas as pd
-from sqlalchemy import text
+import os
 import sys
+from sqlalchemy import create_engine
 
-# ✅ Bỏ biến môi trường đi, dùng URL hardcode để test chính xác lỗi
-DATABASE_URL = "postgresql+psycopg2://postgres:Ntruobgdoi91%40%21@db.dikrxyeyoarybnxrlflm.supabase.co:5432/postgres?sslmode=require"
-print("📌 DEBUG: USING HARDCODED DATABASE_URL", file=sys.stderr)
+# Lấy DATABASE_URL từ biến môi trường
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# ✅ Tạo engine
+# ✅ In ra rõ ràng URL đang dùng
+print("📌 DATABASE_URL từ môi trường:", repr(DATABASE_URL), file=sys.stderr)
+
+# ✅ Kiểm tra nếu bị sai
+if not DATABASE_URL:
+    raise ValueError("❌ Không tìm thấy DATABASE_URL!")
+
+if "port" in DATABASE_URL.lower():
+    raise ValueError("🚫 DATABASE_URL hiện tại chứa chữ 'port'. Hãy sửa lại giá trị trong Render Environment!")
+
+# Nếu dùng format cũ
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+
 engine = create_engine(DATABASE_URL)
 
 # ===== INVENTORY =====
