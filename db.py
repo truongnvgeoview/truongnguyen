@@ -1,19 +1,24 @@
 import os
-from sqlalchemy import create_engine, text
-import pandas as pd
+from sqlalchemy import create_engine
+import sys
 
-# ✅ Lấy DATABASE_URL từ biến môi trường
+# ⚠️ Lấy DATABASE_URL từ biến môi trường
 DATABASE_URL = os.environ.get("DATABASE_URL")
-print("📌 DEBUG URL:", repr(DATABASE_URL))
+print("📌 DEBUG DATABASE_URL:", repr(DATABASE_URL), file=sys.stderr)
 
-if not DATABASE_URL:
-    raise ValueError("❌ DATABASE_URL không tồn tại. Kiểm tra biến môi trường trên Render hoặc .env")
+# ✅ Bắt lỗi nếu vẫn chứa chữ "port"
+if DATABASE_URL is None:
+    raise ValueError("❌ DATABASE_URL không tồn tại!")
+if "port" in DATABASE_URL.lower():
+    raise ValueError("🚫 DATABASE_URL chứa từ 'port' thay vì số! Hãy kiểm tra lại trong Render.")
 
-# ✅ Sửa format nếu dùng postgres:// (Supabase, Heroku hay ElephantSQL đôi khi trả về như vậy)
+# ✅ Fix URL nếu dùng sai format ban đầu (Heroku/Supabase)
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
 
-# ✅ Tạo engine kết nối DB
+# ✅ Tạo engine
+engine = create_engine(DATABASE_URL)
+
 engine = create_engine(DATABASE_URL)
 
 
