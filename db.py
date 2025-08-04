@@ -1,12 +1,17 @@
+import os
 from sqlalchemy import create_engine, text
 import pandas as pd
-import os
 
-# ✅ Lấy DATABASE_URL từ biến môi trường (Render sẽ có sẵn)
+# ✅ Lấy DATABASE_URL từ biến môi trường
 DATABASE_URL = os.environ.get("DATABASE_URL")
-print("📌 DEBUG URL:", repr(DATABASE_URL))  # Hiển thị rõ có "" không
+print("📌 DEBUG URL:", repr(DATABASE_URL))
+
 if not DATABASE_URL:
     raise ValueError("❌ DATABASE_URL không tồn tại. Kiểm tra biến môi trường trên Render hoặc .env")
+
+# ✅ Sửa format nếu dùng postgres:// (Supabase, Heroku hay ElephantSQL đôi khi trả về như vậy)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
 
 # ✅ Tạo engine kết nối DB
 engine = create_engine(DATABASE_URL)
@@ -16,6 +21,7 @@ engine = create_engine(DATABASE_URL)
 def fetch_inventory():
     with engine.begin() as conn:
         return pd.read_sql("SELECT * FROM inventory ORDER BY model", conn)
+
 
 def add_inventory(model, imei, gia_nhap, tinh_trang):
     with engine.begin() as conn:
@@ -30,6 +36,7 @@ def add_inventory(model, imei, gia_nhap, tinh_trang):
             "tinh_trang": tinh_trang
         })
 
+
 def delete_inventory(imei):
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM inventory WHERE imei = :imei"), {"imei": imei})
@@ -39,6 +46,7 @@ def delete_inventory(imei):
 def fetch_sales():
     with engine.begin() as conn:
         return pd.read_sql("SELECT * FROM banhang ORDER BY ngay_ban DESC", conn)
+
 
 def sell_device(imei):
     with engine.begin() as conn:
